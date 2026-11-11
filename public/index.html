@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prueba de votación</title>
+</head>
+<body>
+
+  <h1>Votación de prueba</h1>
+  <p id="estado">Cargando votación...</p>
+
+  <div id="candidatos"></div>
+
+  <p id="mensaje"></p>
+
+  <script>
+    const API = "/api";
+    const STORAGE_KEY = "votacion_prueba_session_v1";
+
+
+const imagenes = [
+  "/imagenes/arto.jpg",
+  "/imagenes/mickey.jpg",
+  "/imagenes/dora.jpg",
+  "/imagenes/pompo.jpg"
+];
+
+    let sessionId = localStorage.getItem(STORAGE_KEY);
+
+    async function iniciar() {
+      try {
+        // Crear sesión si todavía no existe
+        if (!sessionId) {
+          const response = await fetch(`${API}/session`);
+          // Esta ruta requiere POST, no GET.
+          if (!response.ok) throw new Error("Error de sesión");
+        }
+      } catch (error) {
+        // La sesión se crea abajo mediante POST.
+      }
+
+      try {
+        if (!sessionId) {
+          const response = await fetch(`${API}/session`, {
+            method: "POST"
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) throw new Error(data.error);
+
+          sessionId = data.sessionId;
+          localStorage.setItem(STORAGE_KEY, sessionId);
+        }
+
+        await cargarEvento();
+
+      } catch (error) {
+        document.getElementById("estado").textContent =
+          "Error: " + error.message;
+      }
+    }
+
+    async function cargarEvento() {
+      const response = await fetch(
+        `${API}/evento?sessionId=${encodeURIComponent(sessionId)}`
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error);
+
+      document.getElementById("estado").textContent =
+        `Evento: ${data.evento.nombre} | Estado: ${data.evento.estado}`;
+
+      const contenedor = document.getElementById("candidatos");
+      contenedor.innerHTML = "";
+
+      data.candidatos.forEach((candidato, index) => {
+        const tarjeta = document.createElement("div");
+
+        const imagen = document.createElement("img");
+        imagen.src = imagenes[index % imagenes.length];
+        imagen.alt = candidato.nombre;
+        imagen.width = 200;
+
+        const nombre = document.createElement("p");
+        nombre.textContent = candidato.nombre;
+
+        const boton = document.createElement("button");
+        boton.textContent = "Elegir";
+
+        boton.disabled =
+          data.yaVoto || data.evento.estado !== "abierta";
+
+        boton.addEventListener("click", () => {
+          votar(candidato.id, boton);
+        });
+
+        tarjeta.append(imagen, nombre, boton);
+        contenedor.appendChild(tarjeta);
+      });
+
+      if (data.yaVoto) {
+        document.getElementById("mensaje").textContent =
+          "Ya registraste tu voto. ¡Gracias!";
+      } else if (data.evento.estado !== "abierta") {
+        document.getElementById("mensaje").textContent =
+          "La votación todavía no está abierta.";
+      }
+    }
+
+    async function votar(candidateId, boton) {
+      const botones = document.querySelectorAll("button");
+      botones.forEach(b => b.disabled = true);
+
+      try {
+        const response = await fetch(`${API}/votos`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            sessionId,
+            candidateId
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.error);
+
+        document.getElementById("mensaje").textContent =
+          data.mensaje;
+
+        document.getElementById("estado").textContent =
+          "Voto registrado correctamente.";
+
+      } catch (error) {
+        document.getElementById("mensaje").textContent =
+          error.message;
+
+        await cargarEvento();
+
+      }
+    }
+
+    iniciar();
+  </script>
+
+</body>
+</html>
