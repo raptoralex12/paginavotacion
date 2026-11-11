@@ -64,7 +64,16 @@ app.post("/api/session", async (req, res) => {
       .select("id")
       .single();
 
-    if (error) throw error;
+    if (error) {
+  console.error("ERROR DE SUPABASE:", error);
+
+  return res.status(500).json({
+    mensaje: "Error creando sesión",
+    error: error.message,
+    detalles: error.details,
+    codigo: error.code
+  });
+}
 
     res.status(201).json({ sessionId: data.id });
 
