@@ -22,7 +22,7 @@
 
     body {
 
-      font-family: Georgia, "Times New Roman", serif;
+      font-family: "Mod", sans-serif;
 
       color: #e5edf3;
 
@@ -47,6 +47,8 @@
       background: linear-gradient(180deg, rgba(3,14,29,.48), rgba(34,72,99,.25) 45%, rgba(2,9,23,.82));
 
       z-index: -1;
+
+      font-family: "Mod", sans-serif;
 
     }
 
@@ -81,17 +83,12 @@
 
 
     .logo-main {
-
-      font-size: clamp(48px, 13vw, 76px);
-
-      letter-spacing: -4px;
-
-      font-weight: 400;
-
-      line-height: .95;
-
-      color: #a9c9df;
-
+      display: block;
+      width: min(76vw, 390px);
+      height: auto;
+      max-height: 112px;
+      object-fit: contain;
+      margin: 0 auto;
     }
 
 
@@ -149,6 +146,8 @@
       text-align: center;
 
       margin-bottom: 24px;
+
+      font-family: "Billie", sans-serif;
 
     }
 
@@ -262,6 +261,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       transition: opacity .24s ease;
+      font-family: "Billie", serif;
     }
 
     .slide.expanded {
@@ -313,7 +313,7 @@
       left: 12px;
       width: calc(100% - 112px);
       color: #3d5965;
-      font-family: Arial, sans-serif;
+      font-family: "Mod", sans-serif;
       font-size: 14px;
       line-height: 1.4;
       opacity: 0;
@@ -558,7 +558,7 @@
 
     .detail-description {
 
-      font-family: Arial, sans-serif;
+      font-family: "Mod", sans-serif;
 
       font-size: 17px;
 
@@ -640,7 +640,7 @@
 
       margin: 24px auto 0;
 
-      font-family: Arial, sans-serif;
+      font-family: "Mod", sans-serif;
 
       font-size: 14px;
 
@@ -668,6 +668,8 @@
 
       padding: 25px;
 
+      font-family: "Mod", sans-serif;
+
     }
 
 
@@ -692,21 +694,23 @@
 
       animation: appear .25s ease;
 
+      font-family: "Mod", sans-serif;
+
     }
 
 
 
-    .modal-box h2 { font-size: 28px; font-weight: normal; margin-bottom: 14px; }
+    .modal-box h2 { font-size: 28px; font-weight: normal; margin-bottom: 14px; font-family: "Mod", sans-serif; }
 
-    .modal-box p { font-family: Arial, sans-serif; line-height: 1.5; margin-bottom: 25px; }
+    .modal-box p { font-family: Arial, sans-serif; line-height: 1.5; margin-bottom: 25px; font-family: "Mod", sans-serif;}
 
-    .modal-actions { display: flex; justify-content: center; gap: 12px; }
+    .modal-actions { display: flex; justify-content: center; gap: 12px; font-family: "Mod", sans-serif;}
 
-    .modal-actions button { border: 0; padding: 11px 20px; font-size: 17px; }
+    .modal-actions button { border: 0; padding: 11px 20px; font-size: 17px; font-family: "Mod", sans-serif;}
 
-    .cancel-button { background: #aebcc8; color: #294958; }
+    .cancel-button { background: #aebcc8; color: #294958; font-family: "Mod", sans-serif;}
 
-    .confirm-button { background: #294958; color: white; }
+    .confirm-button { background: #294958; color: white; font-family: "Mod", sans-serif; }
 
 
 
@@ -714,7 +718,7 @@
 
       text-align: center;
 
-      font-family: Arial, sans-serif;
+      font-family: "Mod", sans-serif;
 
       font-size: 13px;
 
@@ -738,7 +742,6 @@
 
     @media (max-height: 720px) {
       .app { padding-top: 14px; padding-bottom: 12px; }
-      .logo-main { font-size: 48px; }
       .logo-sub { font-size: 30px; }
       .heading { margin-bottom: 16px; }
       .carousel { height: 410px; }
@@ -768,6 +771,20 @@
 
     }
 
+@font-face {
+  font-family: "Billie";
+  src: url("/fonts/billie%20eilish.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Mod";
+  src: url("/fonts/BwModelicaSS02-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
   </style>
 
 </head>
@@ -780,9 +797,9 @@
 
     <header>
 
-      <div class="logo-main">INVADER</div>
+      <img class="logo-main" src="/imagenes/Logo.png" alt="Invader">
 
-      <div class="logo-sub">Awards</div>
+      
 
     </header>
 
@@ -888,11 +905,11 @@
 
     const descripciones = [
 
-      "Un juego de realidad virtual en el que Neko, tras morir, emprende la escalada de una montaña. Resolviendo rompecabezas en el camino, busca llegar a la cima para volver a ver a su dueño una última vez.",
+      "Conoce el proyecto y descubre el trabajo de este equipo.",
 
-      "Un humano convertido en gato por una bruja trabaja en una cafetería mágica, donde prepara recetas que sanan las emociones de sus clientes. Con cada emoción purificada reúne esferas mágicas para recuperar su forma humana.",
+      "Conoce el proyecto y descubre el trabajo de este equipo.",
 
-      "Un videojuego inspirado en la trama de Pollitos en Fuga, con algunas libertades creativas. Aquí no serás Ginger ni Rocky, sino un personaje nuevo que intenta escapar por su cuenta y dejar el gallinero atrás.",
+      "Conoce el proyecto y descubre el trabajo de este equipo.",
 
       "Conoce el proyecto y descubre el trabajo de este equipo."
 
