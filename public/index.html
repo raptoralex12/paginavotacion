@@ -1,154 +1,1471 @@
-
 <!DOCTYPE html>
+
 <html lang="es">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prueba de votación</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <meta name="theme-color" content="#071728">
+
+  <title>Invader Awards</title>
+
+
+
+  <style>
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+
+    body {
+
+      font-family: Georgia, "Times New Roman", serif;
+
+      color: #e5edf3;
+
+      min-height: 100dvh;
+
+      overflow: hidden;
+
+      background: #071728 url("/imagenes/Fondo.png") center center / cover no-repeat fixed;
+
+    }
+
+
+
+    body::before {
+
+      content: "";
+
+      position: fixed;
+
+      inset: 0;
+
+      background: linear-gradient(180deg, rgba(3,14,29,.48), rgba(34,72,99,.25) 45%, rgba(2,9,23,.82));
+
+      z-index: -1;
+
+    }
+
+
+
+    button { font: inherit; cursor: pointer; }
+
+
+
+    .app {
+
+      min-height: 100dvh;
+
+      height: 100dvh;
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      padding: 24px 0 28px;
+
+      position: relative;
+
+    }
+
+
+
+    header { text-align: center; flex-shrink: 0; margin-top: 4px; }
+
+
+
+    .logo-main {
+
+      font-size: clamp(48px, 13vw, 76px);
+
+      letter-spacing: -4px;
+
+      font-weight: 400;
+
+      line-height: .95;
+
+      color: #a9c9df;
+
+    }
+
+
+
+    .logo-sub {
+
+      font-size: clamp(32px, 9vw, 47px);
+
+      font-style: italic;
+
+      color: #e4eaf0;
+
+      text-shadow: 0 0 12px #d9eaff;
+
+      margin-top: 4px;
+
+    }
+
+
+
+    main {
+
+      width: 100%;
+
+      flex: 1;
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      justify-content: center;
+
+      min-height: 0;
+
+      padding-bottom: 0;
+
+    }
+
+
+
+    #selectionView { width: 100%; }
+
+
+
+    .heading {
+
+      font-size: clamp(23px, 7vw, 32px);
+
+      font-weight: normal;
+
+      color: #e0e8ef;
+
+      text-align: center;
+
+      margin-bottom: 24px;
+
+    }
+
+
+
+    /* Carrusel con tarjetas laterales en diagonal */
+
+    .carousel {
+
+      width: 100%;
+
+      height: 430px;
+
+      position: relative;
+
+      overflow: hidden;
+
+      touch-action: pan-y;
+
+    }
+
+
+
+    .track {
+
+      position: relative;
+
+      width: 100%;
+
+      height: 100%;
+
+    }
+
+
+
+    .slide {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: min(72vw, 300px);
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      filter: blur(3px);
+      z-index: 1;
+      --x: 0px;
+      --y: 0px;
+      --rotation: 0deg;
+      --scale: .78;
+      transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--rotation)) scale(var(--scale));
+      transition: transform .55s cubic-bezier(.2,.75,.25,1), opacity .4s ease, filter .4s ease;
+      will-change: transform, opacity, filter;
+    }
+
+    .slide.active {
+      --x: 0px; --y: 0px; --rotation: 0deg; --scale: 1;
+      opacity: 1; filter: blur(0); pointer-events: auto; z-index: 5;
+    }
+
+    .slide.side-left {
+      --x: -56vw; --y: 48px; --rotation: 7deg; --scale: .82;
+      opacity: .48; filter: blur(2.4px); pointer-events: auto; z-index: 3;
+    }
+
+    .slide.side-right {
+      --x: 56vw; --y: -48px; --rotation: -7deg; --scale: .82;
+      opacity: .48; filter: blur(2.4px); pointer-events: auto; z-index: 3;
+    }
+
+    .slide.hidden-slide { opacity: 0; pointer-events: none; filter: blur(5px); }
+
+    /* El marco no cambia de tamaño. La imagen siempre es absoluta para evitar saltos. */
+    .poster {
+      position: relative;
+      width: 100%;
+      height: 355px;
+      padding: 8px;
+      overflow: hidden;
+      background: #d5d6d8;
+      box-shadow: 0 0 20px rgba(213,236,255,.24);
+    }
+
+    .poster img {
+      position: absolute;
+      display: block;
+      left: 8px;
+      top: 8px;
+      width: calc(100% - 16px);
+      height: 270px;
+      object-fit: contain;
+      object-position: center;
+      background: #383838;
+      transform: none;
+      transition:
+        left .68s cubic-bezier(.2,.75,.25,1),
+        top .68s cubic-bezier(.2,.75,.25,1),
+        width .68s cubic-bezier(.2,.75,.25,1),
+        height .68s cubic-bezier(.2,.75,.25,1);
+    }
+
+    .poster-name {
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      bottom: 12px;
+      color: #244657;
+      font-size: clamp(22px, 6vw, 29px);
+      text-align: center;
+      padding: 0 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: opacity .24s ease;
+    }
+
+    .slide.expanded {
+      width: min(72vw, 300px);
+      opacity: 1;
+      filter: none;
+      pointer-events: auto;
+      z-index: 12;
+      --x: 0px; --y: 0px; --rotation: 0deg; --scale: 1;
+    }
+
+    .slide.expanded .poster {
+      width: 100%;
+      height: 355px;
+      min-height: 355px;
+      padding: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(207,232,255,.2);
+    }
+
+    .slide.expanded .poster img {
+      left: calc(100% - 96px);
+      top: 12px;
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+    }
+
+    .slide.is-morphing .poster-name { opacity: 0 !important; }
+
+    .slide.expanded .poster-name {
+      left: 12px;
+      right: auto;
+      top: 14px;
+      bottom: auto;
+      width: calc(100% - 112px);
+      padding: 0;
+      text-align: left;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      font-size: 23px;
+      line-height: 1.15;
+      opacity: 0;
+    }
+
+    .inline-description {
+      position: absolute;
+      top: 70px;
+      left: 12px;
+      width: calc(100% - 112px);
+      color: #3d5965;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .28s ease, transform .28s ease;
+      pointer-events: none;
+    }
+
+
+
+    .inline-vote-area {
+
+      position: absolute;
+
+      left: 0;
+
+      right: 0;
+
+      bottom: 24px;
+
+      display: flex;
+
+      justify-content: center;
+
+      opacity: 0;
+
+      transform: translateY(10px);
+
+      transition: opacity .28s ease, transform .28s ease;
+
+      pointer-events: none;
+
+    }
+
+
+
+    /* El contenido aparece únicamente cuando termina la transformación de la imagen. */
+
+    .slide.expanded.content-revealed .poster-name {
+
+      opacity: 1;
+
+    }
+
+
+
+    .slide.expanded.content-revealed .inline-description {
+
+      opacity: 1;
+
+      transform: translateY(0);
+
+      transition-delay: .04s;
+
+    }
+
+
+
+    .slide.expanded.content-revealed .inline-vote-area {
+
+      opacity: 1;
+
+      transform: translateY(0);
+
+      pointer-events: auto;
+
+      transition-delay: .10s;
+
+    }
+
+
+
+    .inline-vote-area .vote-button {
+
+      background: #fff;
+
+      color: #294958;
+
+      border: 0;
+
+      padding: 8px 35px;
+
+      font-size: 27px;
+
+      min-width: 135px;
+
+    }
+
+
+
+    .inline-vote-area .vote-button:disabled {
+
+      opacity: .45;
+
+      cursor: not-allowed;
+
+    }
+
+
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      width: 100%;
+      margin: 18px auto 0;
+      flex-shrink: 0;
+      transition: opacity .3s ease, transform .3s ease;
+    }
+
+    .dot {
+      appearance: none;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      border: 1px solid #c8d5df;
+      background: transparent;
+      padding: 0;
+      opacity: .72;
+      transform: scale(.95);
+      transition: opacity .25s ease, background-color .25s ease, transform .25s ease;
+    }
+
+    .dot.active {
+      background: #e4edf4;
+      opacity: 1;
+      transform: scale(1.12);
+    }
+
+    #selectionView.expanded .dots {
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+    }
+
+    .outside-dismiss {
+
+      display: none;
+
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 10;
+
+      background: transparent;
+
+      -webkit-tap-highlight-color: transparent;
+
+    }
+
+
+
+    #selectionView.expanded .outside-dismiss {
+
+      display: block;
+
+    }
+
+
+
+    .slide.expanded {
+
+      z-index: 12;
+
+    }
+
+
+
+@media (prefers-reduced-motion: reduce) {
+
+      .dot, .slide.expanded .poster img,
+
+      .inline-description, .inline-vote-area {
+
+        transition: none !important;
+
+      }
+
+    }
+
+
+
+    /* DETALLE */
+
+    #detailView {
+
+      display: none;
+
+      width: 100%;
+
+      max-width: 470px;
+
+      padding: 0 27px;
+
+      animation: appear .4s ease;
+
+    }
+
+
+
+    .detail-card {
+
+      background: #d0d7df;
+
+      color: #294958;
+
+      min-height: min(470px, 53vh);
+
+      padding: 28px 26px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      box-shadow: 0 0 30px rgba(207,232,255,.2);
+
+    }
+
+
+
+    .detail-top { display: flex; justify-content: space-between; gap: 15px; }
+
+    .detail-info { flex: 1; min-width: 0; }
+
+
+
+    .detail-name {
+
+      font-size: 29px;
+
+      line-height: 1.15;
+
+      margin-bottom: 18px;
+
+      overflow-wrap: anywhere;
+
+    }
+
+
+
+    .detail-description {
+
+      font-family: Arial, sans-serif;
+
+      font-size: 17px;
+
+      line-height: 1.45;
+
+      color: #3d5965;
+
+    }
+
+
+
+    .detail-image {
+
+      width: 105px;
+
+      height: 105px;
+
+      object-fit: contain;
+
+      background: #383838;
+
+      flex-shrink: 0;
+
+    }
+
+
+
+    .vote-area {
+
+      margin-top: auto;
+
+      padding-top: 40px;
+
+      display: flex;
+
+      justify-content: center;
+
+    }
+
+
+
+    .vote-button {
+
+      background: #fff;
+
+      color: #294958;
+
+      border: 0;
+
+      padding: 8px 35px;
+
+      font-size: 27px;
+
+      min-width: 135px;
+
+      transition: *background* .2s;
+
+    }
+
+
+
+    .vote-button:active { background: #b9d2df; }
+
+    .vote-button:disabled { opacity: .45; cursor: not-allowed; }
+
+
+
+    .back-button {
+
+      display: block;
+
+      background: none;
+
+      color: #e6edf3;
+
+      border: 1px solid rgba(255,255,255,.5);
+
+      padding: 10px 23px;
+
+      margin: 24px auto 0;
+
+      font-family: Arial, sans-serif;
+
+      font-size: 14px;
+
+    }
+
+
+
+    /* MODALES */
+
+    .modal {
+
+      display: none;
+
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 20;
+
+      background: rgba(0,0,0,.72);
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 25px;
+
+    }
+
+
+
+    .modal.show { display: flex; }
+
+
+
+    .modal-box {
+
+      background: #d0d7df;
+
+      color: #294958;
+
+      width: 100%;
+
+      max-width: 350px;
+
+      padding: 30px 23px;
+
+      text-align: center;
+
+      animation: appear .25s ease;
+
+    }
+
+
+
+    .modal-box h2 { font-size: 28px; font-weight: normal; margin-bottom: 14px; }
+
+    .modal-box p { font-family: Arial, sans-serif; line-height: 1.5; margin-bottom: 25px; }
+
+    .modal-actions { display: flex; justify-content: center; gap: 12px; }
+
+    .modal-actions button { border: 0; padding: 11px 20px; font-size: 17px; }
+
+    .cancel-button { background: #aebcc8; color: #294958; }
+
+    .confirm-button { background: #294958; color: white; }
+
+
+
+    #status {
+
+      text-align: center;
+
+      font-family: Arial, sans-serif;
+
+      font-size: 13px;
+
+      margin-top: 12px;
+
+      color: #e4edf4;
+
+    }
+
+
+
+    @keyframes appear {
+
+      from { opacity: 0; transform: translateY(12px); }
+
+      to { opacity: 1; transform: translateY(0); }
+
+    }
+
+
+
+    @media (max-height: 720px) {
+      .app { padding-top: 14px; padding-bottom: 12px; }
+      .logo-main { font-size: 48px; }
+      .logo-sub { font-size: 30px; }
+      .heading { margin-bottom: 16px; }
+      .carousel { height: 410px; }
+      .poster, .slide.expanded .poster { height: 340px; min-height: 340px; }
+      .poster img { height: 255px; }
+      .inline-vote-area { bottom: 18px; }
+    }
+
+
+
+    @media (min-width: 700px) {
+
+      .slide { width: 58vw;
+      max-width: 390px; }
+
+      .slide.side-left { --x: -350px; }
+
+      .slide.side-right { --x: 350px; }
+
+    }
+
+
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .slide { transition: none; }
+
+    }
+
+  </style>
+
 </head>
+
+
+
 <body>
 
-  <h1>Votación de prueba</h1>
-  <p id="estado">Cargando votación...</p>
+  <div class="app">
 
-  <div id="candidatos"></div>
+    <header>
 
-  <p id="mensaje"></p>
+      <div class="logo-main">INVADER</div>
+
+      <div class="logo-sub">Awards</div>
+
+    </header>
+
+
+
+    <main>
+
+      <section id="selectionView">
+
+        <div class="outside-dismiss" id="outsideDismiss" aria-hidden="true"></div>
+
+        <h1 class="heading">Escoge al ganador</h1>
+
+        <div class="carousel" id="carousel">
+
+          <div class="track" id="track"></div>
+
+        </div>
+
+        <div class="dots" id="dots"></div>
+
+      </section>
+
+
+
+
+
+
+
+      <p id="status">Cargando votación...</p>
+
+    </main>
+
+  </div>
+
+
+
+  <!-- CONFIRMACION -->
+
+  <div class="modal" id="confirmModal">
+
+    <div class="modal-box">
+
+      <h2>¿Estás seguro?</h2>
+
+      <p id="confirmText">¿Deseas votar por este equipo?</p>
+
+      <div class="modal-actions">
+
+        <button class="cancel-button" id="cancelVote">Cancelar</button>
+
+        <button class="confirm-button" id="confirmVote">Confirmar</button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- RESULTADO -->
+
+  <div class="modal" id="resultModal">
+
+    <div class="modal-box">
+
+      <h2 id="resultTitle">¡Muchas gracias!</h2>
+
+      <p id="resultText">Tu voto se registró correctamente.</p>
+
+      <button class="confirm-button" id="closeResult">Aceptar</button>
+
+    </div>
+
+  </div>
+
+
 
   <script>
+
     const API = "/api";
+
     const STORAGE_KEY = "votacion_prueba_session_v1";
 
 
-const imagenes = [
-  "/imagenes/arto.jpg",
-  "/imagenes/mickey.jpg",
-  "/imagenes/dora.jpg",
-  "/imagenes/pompo.jpg"
-];
+
+    const imagenes = [
+
+      "/imagenes/arto.jpg",
+
+      "/imagenes/mickey.jpg",
+
+      "/imagenes/dora.jpg",
+
+      "/imagenes/pompo.jpg"
+
+    ];
+
+
+
+    // Sustituye estos textos por las descripciones definitivas.
+
+    const descripciones = [
+
+      "Un juego de realidad virtual en el que Neko, tras morir, emprende la escalada de una montaña. Resolviendo rompecabezas en el camino, busca llegar a la cima para volver a ver a su dueño una última vez.",
+
+      "Un humano convertido en gato por una bruja trabaja en una cafetería mágica, donde prepara recetas que sanan las emociones de sus clientes. Con cada emoción purificada reúne esferas mágicas para recuperar su forma humana.",
+
+      "Un videojuego inspirado en la trama de Pollitos en Fuga, con algunas libertades creativas. Aquí no serás Ginger ni Rocky, sino un personaje nuevo que intenta escapar por su cuenta y dejar el gallinero atrás.",
+
+      "Conoce el proyecto y descubre el trabajo de este equipo."
+
+    ];
+
+
 
     let sessionId = localStorage.getItem(STORAGE_KEY);
 
+    let candidatos = [];
+
+    let evento = null;
+
+    let indiceActual = 0;
+
+    let candidatoSeleccionado = null;
+
+    let yaVoto = false;
+
+
+
+    const track = document.getElementById("track");
+
+    const dots = document.getElementById("dots");
+
+    const selectionView = document.getElementById("selectionView");
+
+    const status = document.getElementById("status");
+
+    let voteButton = null;
+
+
+
     async function iniciar() {
-      try {
-        // Crear sesión si todavía no existe
-        if (!sessionId) {
-          const response = await fetch(`${API}/session`);
-          // Esta ruta requiere POST, no GET.
-          if (!response.ok) throw new Error("Error de sesión");
-        }
-      } catch (error) {
-        // La sesión se crea abajo mediante POST.
-      }
 
       try {
+
         if (!sessionId) {
-          const response = await fetch(`${API}/session`, {
-            method: "POST"
-          });
+
+          const response = await fetch(`${API}/session`, { method: "POST" });
 
           const data = await response.json();
 
-          if (!response.ok) throw new Error(data.error);
+          if (!response.ok) throw new Error(data.error || "No se pudo crear la sesión");
 
           sessionId = data.sessionId;
+
           localStorage.setItem(STORAGE_KEY, sessionId);
+
         }
 
         await cargarEvento();
 
       } catch (error) {
-        document.getElementById("estado").textContent =
-          "Error: " + error.message;
+
+        status.textContent = "Error: " + error.message;
+
       }
+
     }
 
+
+
     async function cargarEvento() {
+
       const response = await fetch(
+
         `${API}/evento?sessionId=${encodeURIComponent(sessionId)}`
+
       );
 
       const data = await response.json();
 
-      if (!response.ok) throw new Error(data.error);
+      if (!response.ok) throw new Error(data.error || "No se pudo cargar el evento");
 
-      document.getElementById("estado").textContent =
-        `Evento: ${data.evento.nombre} | Estado: ${data.evento.estado}`;
 
-      const contenedor = document.getElementById("candidatos");
-      contenedor.innerHTML = "";
 
-      data.candidatos.forEach((candidato, index) => {
-        const tarjeta = document.createElement("div");
+      evento = data.evento;
 
-        const imagen = document.createElement("img");
-        imagen.src = imagenes[index % imagenes.length];
-        imagen.alt = candidato.nombre;
-        imagen.width = 200;
+      candidatos = data.candidatos;
 
-        const nombre = document.createElement("p");
-        nombre.textContent = candidato.nombre;
+      yaVoto = data.yaVoto;
 
-        const boton = document.createElement("button");
-        boton.textContent = "Elegir";
 
-        boton.disabled =
-          data.yaVoto || data.evento.estado !== "abierta";
 
-        boton.addEventListener("click", () => {
-          votar(candidato.id, boton);
+      if (!candidatos.length) {
+
+        status.textContent = "No hay participantes registrados.";
+
+        return;
+
+      }
+
+
+
+      renderizarCarrusel();
+
+
+
+      if (yaVoto) {
+
+        status.textContent = "Ya registraste tu voto. ¡Gracias!";
+
+        document.querySelectorAll(".inline-vote-area .vote-button").forEach(button => {
+
+          button.disabled = true;
+
+          button.textContent = "Ya votaste";
+
         });
 
-        tarjeta.append(imagen, nombre, boton);
-        contenedor.appendChild(tarjeta);
-      });
+      } else if (evento.estado !== "abierta") {
 
-      if (data.yaVoto) {
-        document.getElementById("mensaje").textContent =
-          "Ya registraste tu voto. ¡Gracias!";
-      } else if (data.evento.estado !== "abierta") {
-        document.getElementById("mensaje").textContent =
-          "La votación todavía no está abierta.";
+        status.textContent = "La votación todavía no está abierta.";
+
+        document.querySelectorAll(".inline-vote-area .vote-button").forEach(button => {
+
+          button.disabled = true;
+
+        });
+
+      } else {
+
+        status.textContent = "";
+
       }
+
     }
 
-    async function votar(candidateId, boton) {
-      const botones = document.querySelectorAll("button");
-      botones.forEach(b => b.disabled = true);
+
+
+    function renderizarCarrusel() {
+
+      track.innerHTML = "";
+      dots.innerHTML = "";
+
+
+
+
+
+      candidatos.forEach((candidato, index) => {
+
+        const slide = document.createElement("div");
+
+        slide.className = "slide";
+
+
+
+        const poster = document.createElement("div");
+
+        poster.className = "poster";
+
+
+
+        const imagen = document.createElement("img");
+
+        imagen.src = imagenes[index % imagenes.length];
+
+        imagen.alt = candidato.nombre;
+
+
+
+        const nombre = document.createElement("div");
+
+        nombre.className = "poster-name";
+
+        nombre.textContent = candidato.nombre;
+
+
+
+        const descripcion = document.createElement("p");
+
+        descripcion.className = "inline-description";
+
+        descripcion.textContent = descripciones[index % descripciones.length];
+
+
+
+        const voteArea = document.createElement("div");
+
+        voteArea.className = "inline-vote-area";
+
+
+
+        const voteBtn = document.createElement("button");
+
+        voteBtn.className = "vote-button";
+
+        voteBtn.textContent = "Votar";
+
+        voteBtn.disabled = yaVoto || evento.estado !== "abierta";
+
+        voteBtn.addEventListener("click", (event) => {
+
+          event.stopPropagation();
+
+          mostrarConfirmacionVoto();
+
+        });
+
+
+
+        voteArea.appendChild(voteBtn);
+
+        poster.append(imagen, nombre, descripcion, voteArea);
+
+        slide.appendChild(poster);
+
+
+
+        slide.addEventListener("click", (event) => {
+
+          if (selectionView.classList.contains("expanded")) {
+
+            // La imagen permanece; tocar el resto de la ficha la cierra.
+
+            if (!event.target.closest("img") && !event.target.closest(".vote-button")) {
+
+              volver();
+
+            }
+
+            return;
+
+          }
+
+
+
+          if (index !== indiceActual) {
+
+            cambiarIndice(index);
+
+          } else {
+
+            abrirDetalle(index);
+
+          }
+
+        });
+
+
+
+        track.appendChild(slide);
+
+        const dot = document.createElement("button");
+
+        dot.className = "dot";
+
+        dot.setAttribute("aria-label", `Participante ${index + 1}`);
+
+        dot.addEventListener("click", () => cambiarIndice(index));
+
+        dots.appendChild(dot);
+
+      });
+
+
+
+      cambiarIndice(0);
+
+    }
+
+
+
+    // Posiciona las tarjetas de forma circular: al pasar la última vuelve a la primera.
+
+    function cambiarIndice(index) {
+
+      if (!candidatos.length) return;
+
+
+
+      indiceActual = (index + candidatos.length) % candidatos.length;
+
+
+
+      const slides = document.querySelectorAll(".slide");
+
+      slides.forEach((slide, i) => {
+
+        slide.classList.remove("active", "side-left", "side-right", "hidden-slide");
+
+
+
+        let diferencia = i - indiceActual;
+
+        const total = candidatos.length;
+
+
+
+        // Elegir siempre la distancia circular más corta.
+
+        if (diferencia > total / 2) diferencia -= total;
+
+        if (diferencia < -total / 2) diferencia += total;
+
+
+
+        if (diferencia === 0) {
+
+          slide.classList.add("active");
+
+        } else if (diferencia === -1) {
+
+          slide.classList.add("side-left");
+
+        } else if (diferencia === 1) {
+
+          slide.classList.add("side-right");
+
+        } else {
+
+          slide.classList.add("hidden-slide");
+
+        }
+
+      });
+
+
+
+      document.querySelectorAll(".dot").forEach((dot, i) => {
+
+        dot.classList.toggle("active", i === indiceActual);
+
+      });
+
+    }
+
+
+
+    async function abrirDetalle(index) {
+      if (yaVoto) {
+        mostrarResultado("¡Ya participaste!", "Tu voto ya fue registrado. Muchas gracias por participar.");
+        return;
+      }
+      if (evento.estado !== "abierta") {
+        status.textContent = "La votación no está abierta.";
+        return;
+      }
+
+      candidatoSeleccionado = candidatos[index];
+      indiceActual = index;
+      const slideSeleccionado = document.querySelectorAll(".slide")[index];
+
+      document.querySelectorAll(".slide").forEach(slide => {
+        slide.classList.remove("expanded", "content-revealed", "is-morphing");
+      });
+
+      slideSeleccionado.classList.add("is-morphing");
+      selectionView.classList.add("expanded");
+      slideSeleccionado.classList.add("expanded");
+
+      await new Promise(resolve => setTimeout(resolve, 700));
+
+      slideSeleccionado.classList.add("content-revealed");
+      slideSeleccionado.classList.remove("is-morphing");
+
+      voteButton = slideSeleccionado.querySelector(".vote-button");
+      voteButton.disabled = yaVoto || evento.estado !== "abierta";
+      voteButton.textContent = yaVoto ? "Ya votaste" : "Votar";
+      status.textContent = "";
+    }
+
+    async function volver() {
+      const slideSeleccionado = document.querySelector(".slide.expanded");
+      if (!slideSeleccionado) return;
+
+      slideSeleccionado.classList.remove("content-revealed");
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      slideSeleccionado.classList.add("is-morphing");
+      slideSeleccionado.classList.remove("expanded");
+      selectionView.classList.remove("expanded");
+
+      await new Promise(resolve => setTimeout(resolve, 700));
+
+      slideSeleccionado.classList.remove("is-morphing");
+      candidatoSeleccionado = null;
+      voteButton = null;
+    }
+
+    function mostrarConfirmacionVoto() {
+
+      if (!candidatoSeleccionado || yaVoto || !voteButton) return;
+
+
+
+      document.getElementById("confirmText").textContent =
+
+        `¿Estás seguro de que deseas votar por ${candidatoSeleccionado.nombre}?`;
+
+      document.getElementById("confirmModal").classList.add("show");
+
+    }
+
+
+
+    document.getElementById("cancelVote").addEventListener("click", () => {
+
+      document.getElementById("confirmModal").classList.remove("show");
+
+    });
+
+
+
+    document.getElementById("confirmVote").addEventListener("click", votar);
+
+
+
+    async function votar() {
+
+      document.getElementById("confirmModal").classList.remove("show");
+
+      voteButton.disabled = true;
+
+      status.textContent = "Registrando tu voto...";
+
+
 
       try {
+
         const response = await fetch(`${API}/votos`, {
+
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+
+          headers: { "Content-Type": "application/json" },
+
           body: JSON.stringify({
+
             sessionId,
-            candidateId
+
+            candidateId: candidatoSeleccionado.id
+
           })
+
         });
+
+
 
         const data = await response.json();
 
-        if (!response.ok) throw new Error(data.error);
+        if (!response.ok) throw new Error(data.error || "No se pudo registrar el voto");
 
-        document.getElementById("mensaje").textContent =
-          data.mensaje;
 
-        document.getElementById("estado").textContent =
-          "Voto registrado correctamente.";
+
+        yaVoto = true;
+
+        document.querySelectorAll(".inline-vote-area .vote-button").forEach(button => {
+
+          button.disabled = true;
+
+          button.textContent = "Ya votaste";
+
+        });
+
+
+
+        mostrarResultado(
+
+          "¡Voto registrado!",
+
+          "Tu voto se registró correctamente. Gracias por participar en los Invader Awards."
+
+        );
+
+
+
+        status.textContent = "Voto registrado correctamente.";
 
       } catch (error) {
-        document.getElementById("mensaje").textContent =
-          error.message;
 
-        await cargarEvento();
+        voteButton.disabled = false;
+
+        mostrarResultado("No se pudo votar", error.message);
+
+
+
+        try {
+
+          await cargarEvento();
+
+        } catch (e) {
+
+          status.textContent = e.message;
+
+        }
 
       }
+
     }
 
+
+
+    function mostrarResultado(titulo, mensaje) {
+
+      document.getElementById("resultTitle").textContent = titulo;
+
+      document.getElementById("resultText").textContent = mensaje;
+
+      document.getElementById("resultModal").classList.add("show");
+
+    }
+
+
+
+    document.getElementById("closeResult").addEventListener("click", () => {
+
+      document.getElementById("resultModal").classList.remove("show");
+
+    });
+
+
+
+    // Tocar fuera de la tarjeta cierra la ficha.
+
+    document.getElementById("outsideDismiss").addEventListener("click", (event) => {
+
+      event.preventDefault();
+
+      volver();
+
+    });
+
+
+
+
+
+    // Deslizar con el dedo: admite avanzar y retroceder indefinidamente.
+
+    let touchStartX = 0;
+
+    let touchEndX = 0;
+
+    const carousel = document.getElementById("carousel");
+
+
+
+    carousel.addEventListener("touchstart", (event) => {
+
+      touchStartX = event.changedTouches[0].screenX;
+
+    }, { passive: true });
+
+
+
+    carousel.addEventListener("touchend", (event) => {
+
+      if (selectionView.classList.contains("expanded")) return;
+
+      touchEndX = event.changedTouches[0].screenX;
+
+      const diferencia = touchStartX - touchEndX;
+
+      if (Math.abs(diferencia) < 40) return;
+
+
+
+      if (diferencia > 0) cambiarIndice(indiceActual + 1);
+
+      else cambiarIndice(indiceActual - 1);
+
+    }, { passive: true });
+
+
+
+    window.addEventListener("resize", () => cambiarIndice(indiceActual));
+
+
+
     iniciar();
+
   </script>
 
 </body>
+
 </html>
