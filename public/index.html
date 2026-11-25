@@ -220,15 +220,15 @@
     .slide.hidden-slide { opacity: 0; pointer-events: none; filter: blur(5px); }
 
     /* El marco no cambia de tamaño. La imagen siempre es absoluta para evitar saltos. */
-    .poster {
-      position: relative;
-      width: 100%;
-      height: 355px;
-      padding: 8px;
-      overflow: hidden;
-      background: #d5d6d8;
-      box-shadow: 0 0 20px rgba(213,236,255,.24);
-    }
+  .poster {
+    position: relative;
+    width: 100%;
+    height: 355px;
+    padding: 8px;
+    overflow: hidden;
+    background: #d5d6d8;
+    box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.75);
+  }
 
     .poster img {
       position: absolute;
@@ -252,7 +252,7 @@
       position: absolute;
       left: 8px;
       right: 8px;
-      bottom: 12px;
+      bottom: 15px;
       color: #244657;
       font-size: clamp(22px, 6vw, 29px);
       text-align: center;
@@ -293,28 +293,28 @@
     .slide.is-morphing .poster-name { opacity: 0 !important; }
 
     .slide.expanded .poster-name {
-      left: 12px;
+      left: 20px;
       right: auto;
-      top: 14px;
+      top: 20px;
       bottom: auto;
       width: calc(100% - 112px);
       padding: 0;
       text-align: left;
       white-space: normal;
       overflow-wrap: anywhere;
-      font-size: 23px;
+      font-size: 22px;
       line-height: 1.15;
       opacity: 0;
     }
 
     .inline-description {
       position: absolute;
-      top: 70px;
-      left: 12px;
-      width: calc(100% - 112px);
+      top: 50px;
+      left: 20px;
+      width: calc(100% - 133px);
       color: #3d5965;
       font-family: "Mod", sans-serif;
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1.4;
       opacity: 0;
       transform: translateY(8px);
@@ -399,6 +399,10 @@
       font-size: 27px;
 
       min-width: 135px;
+
+      font-family:"Billie", sans-serif;
+
+      box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.75);
 
     }
 
@@ -706,11 +710,11 @@
 
     .modal-actions { display: flex; justify-content: center; gap: 12px; font-family: "Mod", sans-serif;}
 
-    .modal-actions button { border: 0; padding: 11px 20px; font-size: 17px; font-family: "Mod", sans-serif;}
+    .modal-actions button { border: 0; padding: 11px 20px; font-size: 17px; font-family: "Billie", sans-serif;}
 
-    .cancel-button { background: #aebcc8; color: #294958; font-family: "Mod", sans-serif;}
+    .cancel-button { background: #aebcc8; color: #294958; font-family: "Billie", sans-serif;}
 
-    .confirm-button { background: #294958; color: white; font-family: "Mod", sans-serif; }
+    .confirm-button { background: #294958; color: white; font-family: "Billie", sans-serif; }
 
 
 
